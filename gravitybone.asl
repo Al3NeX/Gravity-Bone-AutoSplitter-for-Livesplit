@@ -1,15 +1,14 @@
 state("gravitybone", "KMQuake2")
 {
-   //dichiarazione dei puntatori
-   string10 state_name: 0x003E094, 0x11C; 
-   int friendly_mutton_chop : 0x0019504, 0x75C;
-   int birds : 0x00221AC, 0x10C;
-   int song : 0x00BB220, 0x6BC;
-  
-   //98 blank.cin
-   //70 parlo1 or 0 if reset
-   //98 b01.cin or 0 if reset
-   //66 bad
+   //pointers
+    string7 state_name: "gravitybone.exe", 0xA58D14; 
+    int birds : 0x00221AC, 0x10C;
+    bool inMenu: "gravitybone.exe", 0x1B1EA8;
+    bool isNotLoading: "gravitybone.exe", 0x14B690C; 
+    int elevator : "gravitybone.exe", 0x9F6540;
+    bool fine: "gravitybone.exe", 0x10C69C; 
+    int friendly_mutton_chop : 0x0019504, 0x75C;
+    
 
 }
 init 
@@ -19,7 +18,7 @@ init
 }
 update
 {
-    if ( current.friendly_mutton_chop == 0  );
+    if ( current.state_name == "parlo1" );
     {
         vars.split = 0;
     }
@@ -37,13 +36,15 @@ startup
     settings.Add("option7", true ,"5th Bird's Photo Split","option2");
     settings.Add("option8", true ,"Elevator Split");
 
-    settings.SetToolTip("option1", "abilita xddddd" );
+    settings.SetToolTip("option1", "First Level Ending Split" );
+    settings.SetToolTip("option2", "Splitting for every Bird Photo" );
+    settings.SetToolTip("option8", "Splitting at the Elevator" );
    
-   //works correctly if you start a new game
+   
 }
 start 
 {
-    if ( current.friendly_mutton_chop != 0 && old.friendly_mutton_chop == 0 && current.state_name != "hof1"   )
+    if ( current.friendly_mutton_chop != 0 && old.friendly_mutton_chop == 0 && current.state_name == "parlo1" )
     {
         vars.split++;
         return true;
@@ -105,27 +106,39 @@ split
       
     if (settings ["option8"] )
     {
-        if( current.song == 1919037283  && old.song == 0  && current.state_name == "hof1" )    //elevator split
+        if( current.elevator == 0 && old.elevator != 0 && current.state_name == "hof1" && current.birds == 327685 )    //elevator split
         {
             vars.split+=1;
             return true;
         }
     }
-    if( current.song == 0   && old.song == 1919037283  && current.state_name == "hof1" )    //ending split
-        {
-            vars.split+=1;
-            return true;
-        }
+    
+    if( current.fine == false  && old.fine != false && current.state_name == "hof1" && current.isNotLoading == true )    //ending split
+    {
+        vars.split+=1;
+        return true;
+    }
+    
+    
     
 }
 
-
+isLoading
+{
+    if (current.isNotLoading == false || current.inMenu == true)
+    {
+        return true;
+    }
+    else 
+        return false;
+        
+        
+}
 
 reset
 {
-    if ( current.friendly_mutton_chop == 0 && old.friendly_mutton_chop != 0 && current.state_name != "b01.cin" && current.state_name != "victory.p" )
+    if ( old.state_name != "parlo1" && current.state_name == "parlo1" && old.isNotLoading == false )
     {
-
         vars.split=0;
         return true;
     }
