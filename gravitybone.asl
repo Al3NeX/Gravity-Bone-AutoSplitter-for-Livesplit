@@ -137,7 +137,7 @@ isLoading
 
 reset
 {
-    if ( old.state_name != "parlo1" && current.state_name == "parlo1" && old.isNotLoading == false )
+    if ( current.friendly_mutton_chop == 0 && old.friendly_mutton_chop != 0 && current.state_name != "b01.cin" && current.state_name != "victory.p" && current.state_name != "hof1" )
     {
         vars.split=0;
         return true;
